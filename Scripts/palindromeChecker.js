@@ -56,3 +56,15 @@ function palindrome2(str) {
   //   it's a palindrome!
   return true;
 }
+
+function palindrome3(str) {
+  return (
+    str.replace(/[\W_]/g, "").toLowerCase() ===
+    str
+      .replace(/[\W_]/g, "")
+      .toLowerCase()
+      .split("")
+      .reverse()
+      .join("")
+  );
+}
