@@ -2,29 +2,52 @@ function convertToRoman(num) {
   // Check gor numbers:
   if (typeof num != "number") return "not a number";
 
-  let romanLetters = {
-    1: "I",
-    5: "V",
-    10: "X",
-    50: "L",
-    100: "C",
-    500: "D",
-    1000: "M"
-  };
-
+// Split number to 4 digits:
   let numArr = [];
-  let multiplier = 1;
-  while (num > 0) {
-    numArr.unshift((num % 10) * multiplier);
+  while (num > 0 || numArr.length < 4) {
+    numArr.unshift((num % 10) );
     num = Math.floor(num / 10);
-    multiplier *= 10;
   }
 
-  for (let i = 0; i < numArr.length; i++) {}
+// all possipilities:
+     let m = ["", "M", "MM", "MMM"]; 
+     let c = ["", "C", "CC", "CCC", "CD", "D",  
+                        "DC", "DCC", "DCCC", "CM"]; 
+     let x = ["", "X", "XX", "XXX", "XL", "L",  
+                        "LX", "LXX", "LXXX", "XC"]; 
+     let i = ["", "I", "II", "III", "IV", "V",  
+                        "VI", "VII", "VIII", "IX"]; 
+          
+          // construct roman number:
+     let thousands = m[numArr[0]]; 
+     let hundereds = c[numArr[1]]; 
+     let tens =  x[numArr[2]]; 
+     let ones = i[numArr[3]]; 
+          
+     let ans = thousands + hundereds + tens + ones;
 
-  let romanArr = [];
+  
 
-  return numArr;
+  return ans;
 }
 
-console.log(convertToRoman(136));
+function convertToRoman2(number) {
+    let num = [1, 4, 5, 9, 10, 40, 50, 90,  
+           100, 400, 500, 900, 1000];
+    let sym = ["I", "IV", "V", "IX", "X", "XL",  
+           "L", "XC", "C", "CD", "D", "CM", "M"];
+    let i = 12;
+    let romanized = "";
+    while (number) {
+        let div = Math.floor(number / num[i]);
+        number %= num[i] ;
+  
+        while (div) {
+            romanized += sym[i];
+            div -= 1;
+        }
+        i -= 1;
+    }
+    return romanized;
+        }
+console.log(convertToRoman2(136));
