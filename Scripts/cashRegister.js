@@ -226,3 +226,84 @@ checkCashRegister(19.5, 20.0, [
     ["TWENTY", 60.0],
     ["ONE HUNDRED", 100.0]
 ]);
+
+// another solution:
+function checkCashRegister(price, cash, cid) {
+    // All amounts are multiplied by 100 until the final result to avoid errors with floating point math
+    const denominations = {
+        "PENNY": 1,
+        "NICKEL": 5,
+        "DIME": 10,
+        "QUARTER": 25,
+        "ONE": 100,
+        "FIVE": 500,
+        "TEN": 1000,
+        "TWENTY": 2000,
+        "ONE HUNDRED": 10000
+    }
+    let changeDue = (cash * 100 - price * 100);
+    const register = cid.reverse().map(el => [el[0], Math.round(el[1] * 100)]);
+    const registerTotal = register.reduce((sum, elem) => (sum + elem[1]), 0);
+
+    if (changeDue > registerTotal) return "Insufficient Funds";
+    if (changeDue === registerTotal) return "Closed";
+
+    let partial;
+    let change = register.reduce((acc, elem) => {
+        // for each denomination calculate the lesser of (a) the amount that could be paid with that
+        // denomination without going over the amount owed, and (b) the actual amount of that denomination in 
+        // the register. Denominations not used to make change are excluded from the resulting array.
+        partial = Math.min(elem[1], Math.floor(changeDue / denominations[elem[0]]) * denominations[elem[0]]);
+        if (partial > 0) {
+            changeDue -= partial;
+            acc.push([elem[0], partial / 100]);
+        }
+        return acc;
+    }, [])
+
+    // If the correct change could not be made from what was in the register.
+    if (changeDue > 0) return "Insufficient Funds"
+
+    return change;
+}
+
+// good one
+function checkCashRegister(price, cash, cid) {
+    //declare and initialize variables
+    var change = Math.round((cash - price) * 100);
+    var value = 0;
+    var changeRecord = [];
+    var currency = [1, 5, 10, 25, 100, 500, 1000, 2000, 10000];
+    //convert all floats to integers due to floating point number issue
+    cid.forEach(el => el[1] = Math.round(el[1] * 100));
+    //helper function to check if sufficient cash for change is in the drawer
+    function enoughFund(cid) {
+        var sum = cid.filter((el, i) => change >= currency[i]);
+        return sum.reduce((a, b) => {
+            return a + b[1];
+        }, 0);
+    }
+
+    //Actual program/control flow starts here
+    if (enoughFund(cid) < change)
+        return "Insufficient Funds";
+    else if (enoughFund(cid) === change)
+        return "Closed";
+    else {
+        for (var i = cid.length - 1; i > -1; i--) {
+            value = 0;
+            while (cid[i][1] > 0 && change >= currency[i]) {
+                //update everything as long as condition is true
+                change -= currency[i];
+                cid[i][1] -= currency[i];
+                //value keeps track of the amount of each currency unit as change
+                value += currency[i];
+            }
+            if (value)
+                changeRecord.push([cid[i][0], value]);
+        }
+    }
+    //divide each array by 100 to display a proper money format
+    changeRecord.forEach(el => el[1] = (el[1] / 100));
+    return changeRecord;
+}
